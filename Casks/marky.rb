@@ -15,7 +15,22 @@ cask "marky" do
     wrapper = "#{HOMEBREW_PREFIX}/bin/marky"
     File.write(wrapper, <<~SH)
       #!/bin/bash
-      exec /usr/bin/open -a "#{appdir}/Marky.app" --args "$@"
+      # Resolve paths to absolute since open -a launches with a different cwd.
+      args=()
+      for arg in "$@"; do
+        if [[ "$arg" != -* ]]; then
+          if [[ -d "$arg" ]]; then
+            args+=("$(cd "$arg" && pwd)")
+          elif [[ -f "$arg" ]]; then
+            args+=("$(cd "$(dirname "$arg")" && pwd)/$(basename "$arg")")
+          else
+            args+=("$arg")
+          fi
+        else
+          args+=("$arg")
+        fi
+      done
+      exec /usr/bin/open -a "#{appdir}/Marky.app" --args "${args[@]}"
     SH
     File.chmod(0755, wrapper)
   end
