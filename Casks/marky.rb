@@ -15,7 +15,7 @@ cask "marky" do
     wrapper = "#{HOMEBREW_PREFIX}/bin/marky"
     File.write(wrapper, <<~SH)
       #!/bin/bash
-      # Resolve paths to absolute since open -a launches with a different cwd.
+      # Resolve paths to absolute (the binary may have a different cwd).
       args=()
       for arg in "$@"; do
         if [[ "$arg" != -* ]]; then
@@ -30,7 +30,11 @@ cask "marky" do
           args+=("$arg")
         fi
       done
-      exec /usr/bin/open -a "#{appdir}/Marky.app" --args "${args[@]}"
+      # Direct-exec the binary so tauri-plugin-single-instance can detect
+      # the lock and forward args to an already-running instance.
+      # `open -a` routes through Apple Events and bypasses single_instance.
+      nohup "#{appdir}/Marky.app/Contents/MacOS/marky" "${args[@]}" >/dev/null 2>&1 &
+      disown >/dev/null 2>&1 || true
     SH
     File.chmod(0755, wrapper)
   end
