@@ -1,6 +1,6 @@
 cask "marky" do
-  version "0.1.1"
-  sha256 "e701b3121d83c517c8ac37a2e042728c4245b26b96656ee63e2d15f39103889b"
+  version "0.1.2"
+  sha256 "bb3b26f754dc6523aab83f4736cd35ebb2abd9a3767acea82f9a69f37fc8c04c"
 
   url "https://github.com/GRVYDEV/marky/releases/download/v#{version}/Marky_#{version}_aarch64.tar.gz"
   name "Marky"
